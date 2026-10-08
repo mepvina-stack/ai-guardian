@@ -1,0 +1,286 @@
+<title>AI GUARDIAN – Lá chắn học đường thông minh</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: control desk on the left, a real-size phone on the right; on phones the app goes full screen and the controls move into a bottom sheet */
+:root{
+  --bg:#E9F2F0; --panel:#FFFFFF; --fg:#10283A; --muted:#566B7A; --line:#D5E2E6; --accent:#0F766E; --accent-ink:#0F766E;
+  --red:#DC2626; --orange:#F97316; --amber:#D97706; --green:#16A34A; --sky:#0284C7; --purple:#7C3AED; --navy:#0F2A3D;
+  --display:'Baloo 2',"Be Vietnam Pro",system-ui,sans-serif; --body:'Be Vietnam Pro',system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#08151D;--panel:#11252F;--fg:#E6F0F2;--muted:#9DB3BE;--line:#23414F;--accent-ink:#5EEAD4;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#08151D;--panel:#11252F;--fg:#E6F0F2;--muted:#9DB3BE;--line:#23414F;--accent-ink:#5EEAD4;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 var(--body)}
+button{font-family:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.stage{min-height:100%;display:grid;grid-template-columns:minmax(0,420px) 400px;gap:40px;justify-content:center;align-items:center;padding-block:28px;padding-inline:20px}
+.desk{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:24px;min-width:0}
+.desk h1{font:800 30px/1.1 var(--display);margin:0}
+.desk .k{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:6px}
+.desk p{color:var(--muted);margin:8px 0 16px}
+.scn{display:flex;width:100%;gap:12px;align-items:center;text-align:left;background:transparent;border:1px solid var(--line);color:var(--fg);border-radius:14px;padding:11px 14px;margin-bottom:9px;cursor:pointer;font-size:15px;font-weight:600}
+.scn:hover{border-color:var(--accent)}
+.scn .d{width:14px;height:14px;border-radius:50%;flex:none}
+.scn small{display:block;color:var(--muted);font-weight:500;font-size:13px}
+.speed{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:14px;color:var(--muted)}
+.speed input{accent-color:var(--accent)}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.brand span.lg{background:#fff;border-radius:8px;padding:4px 8px;display:inline-flex}
+.brand img{height:22px;width:auto}
+
+/* phone */
+.phone{width:380px;max-width:100%;border-radius:52px;background:#0B1220;padding:13px;box-shadow:0 30px 60px rgba(15,42,61,.35)}
+.scr{position:relative;height:780px;border-radius:40px;overflow:hidden;background:#F4F7FA;color:#10283A;display:flex;flex-direction:column;font-size:14px}
+.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:104px;height:28px;border-radius:15px;background:#0B1220;z-index:20}
+.sbar{flex:none;height:46px;display:flex;justify-content:space-between;align-items:flex-end;padding:0 26px 5px;font-weight:700;font-size:13.5px}
+.top{flex:none;background:#0F766E;color:#fff;padding:12px 18px 14px;transition:background .3s}
+.top h2{margin:0;font:800 21px/1.15 var(--display)} .top p{margin:2px 0 0;font-size:12.5px;opacity:.9}
+.body{flex:1;overflow-y:auto;padding:4px 0 12px}
+.nav{flex:none;height:66px;background:#fff;border-top:1px solid #E2E8F0;display:grid;grid-template-columns:repeat(4,1fr)}
+.nav button{background:none;border:0;color:#94A3B8;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;position:relative}
+.nav button svg{width:22px;height:22px}
+.nav button[aria-current="true"]{color:#0F766E}
+.nav .badge{position:absolute;top:8px;left:calc(50% + 6px);background:#DC2626;color:#fff;border-radius:9px;font-size:10px;padding:0 5px;min-width:16px;text-align:center}
+.card{background:#fff;border-radius:16px;margin:10px 14px;padding:12px 14px;box-shadow:0 1px 5px rgba(0,0,0,.06)}
+.lbl{font-size:11.5px;font-weight:700;color:#64748B;letter-spacing:.06em;margin:14px 20px 0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
+.stats b{display:block;font:800 26px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.stats span{font-size:11.5px;color:#64748B}
+.z{display:flex;align-items:center;gap:10px;cursor:pointer;border:0;width:calc(100% - 28px);text-align:left;font:inherit;color:inherit}
+.z .d{width:11px;height:11px;border-radius:50%;flex:none}
+.z b{display:block;font-size:14.5px} .z small{color:#64748B;font-size:12px}
+.z em{margin-left:auto;font-style:normal;font-size:11px;font-weight:700;padding:3px 9px;border-radius:9px;white-space:nowrap}
+.alertbar{display:flex;gap:10px;align-items:center;border:0;width:calc(100% - 28px);text-align:left;font:inherit;cursor:pointer;color:#fff}
+.alertbar b{display:block}
+.push{position:absolute;left:10px;right:10px;top:-160px;z-index:15;background:rgba(255,255,255,.97);border-radius:20px;padding:12px 14px;box-shadow:0 12px 30px rgba(0,0,0,.28);transition:top .45s cubic-bezier(.2,.8,.2,1);cursor:pointer;border:0;text-align:left;font:inherit;color:#10283A}
+.push.show{top:46px}
+.push .hd{display:flex;gap:8px;align-items:center;font-size:11.5px;color:#64748B;font-weight:700}
+.push .ic{width:22px;height:22px;border-radius:6px;background:#0F766E;color:#fff;display:grid;place-items:center;font-size:10.5px}
+.lvl{display:inline-block;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px;margin:6px 0 3px}
+.btns{display:flex;gap:8px;margin:12px 14px}
+.btn{flex:1;border-radius:13px;padding:13px 0;font-weight:700;font-size:14.5px;cursor:pointer;border:2px solid #0F766E;background:#0F766E;color:#fff}
+.btn.ghost{background:#fff;color:#DC2626;border-color:#DC2626}
+.btn[disabled]{opacity:.45;cursor:default}
+.tl{font-size:12.5px;line-height:1.8}
+.tl div{display:flex;gap:8px} .tl time{color:#64748B;font-variant-numeric:tabular-nums;flex:none}
+.opts{display:grid;gap:8px;margin-top:8px}
+.opt{border:1px solid #CBD5E1;border-radius:12px;padding:10px 12px;background:#fff;text-align:left;cursor:pointer;font:inherit;color:#10283A}
+.opt[aria-pressed="true"]{border-color:#0F766E;background:#E6F6F3;font-weight:700}
+.row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid #EEF2F5}
+.row:first-child{border-top:0}
+.sw{width:44px;height:26px;border-radius:13px;background:#CBD5E1;position:relative;border:0;cursor:pointer;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s}
+.sw[aria-checked="true"]{background:#0F766E} .sw[aria-checked="true"]::after{left:21px}
+.bar{height:12px;border-radius:6px}
+.log{font-size:13px}
+.log .it{display:flex;gap:10px;padding:9px 0;border-top:1px solid #EEF2F5}
+.log .it:first-child{border-top:0}
+.log .d{width:9px;height:9px;border-radius:50%;margin-top:6px;flex:none}
+.empty{color:#64748B;text-align:center;padding:14px 8px}
+.toast{position:absolute;left:50%;bottom:80px;transform:translateX(-50%) translateY(20px);background:#0F2A3D;color:#fff;border-radius:12px;padding:9px 14px;font-size:13px;opacity:0;transition:.3s;z-index:16;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@keyframes pulse{0%{r:7;opacity:.6}70%{r:18;opacity:0}100%{r:18;opacity:0}}
+.pulse{animation:pulse 1.4s infinite}
+@keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-1.2deg)}75%{transform:rotate(1.2deg)}}
+.phone.ring{animation:shake .12s 5}
+.fab{display:none}
+.sheet-bg{display:none}
+
+/* phone-width: app full screen */
+@media (max-width:820px){
+  html,body{overflow-x:hidden}
+  .stage{display:block;padding:0}
+  .desk{position:fixed;left:0;right:0;bottom:0;z-index:40;border-radius:22px 22px 0 0;max-height:80%;overflow:auto;transform:translateY(105%);transition:transform .3s;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+  .desk.open{transform:none}
+  .sheet-bg.open{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:39}
+  .phone{width:100%;border-radius:0;padding:0;box-shadow:none;background:transparent}
+  .scr{height:100vh;height:100dvh;border-radius:0}
+  .notch{display:none}
+  .fab{display:flex;position:fixed;right:16px;bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:30;background:#F97316;color:#fff;border:0;border-radius:999px;padding:12px 16px;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,.25);cursor:pointer;gap:6px;align-items:center}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="stage">
+ <aside class="desk" id="desk" aria-label="Bảng điều khiển mô phỏng">
+  <div class="k">Mô phỏng · Khởi nghiệp – Đổi mới sáng tạo</div>
+  <h1>AI GUARDIAN</h1>
+  <div class="k" style="margin:8px 0 10px">Lá chắn học đường thông minh</div>
+  <p>Đóng vai thầy cô trực. Chọn một sự cố để điện thoại nhận cảnh báo kèm vị trí, rồi xử lý như thật.</p>
+  <div class="k" style="margin:4px 0 8px;color:var(--orange)">Giai đoạn 1 · Phát hiện hút thuốc</div>
+  <button class="scn" data-s="vape"><span class="d" style="background:var(--orange)"></span><span>Hơi thuốc lá điện tử<small>WC Nam · Dãy A tầng 2</small></span></button>
+  <button class="scn" data-s="cig"><span class="d" style="background:var(--orange)"></span><span>Khói thuốc lá điếu<small>WC Nữ · Dãy A tầng 2</small></span></button>
+  <button class="scn" data-s="perfume"><span class="d" style="background:var(--green)"></span><span>Xịt nước hoa (thử báo giả)<small>WC Nam · AI GUARDIAN tự lọc</small></span></button>
+  <button class="scn" data-s="off"><span class="d" style="background:var(--amber)"></span><span>Máy đo bị che hoặc mất kết nối<small>WC Nữ · Dãy A tầng 2</small></span></button>
+  <div class="k" style="margin:14px 0 8px;color:var(--sky)">Giai đoạn 2 · Camera AI hành lang (mở rộng)</div>
+  <button class="scn" data-s="crowd"><span class="d" style="background:var(--sky)"></span><span>Tụ tập bất thường trước cửa WC<small>Hành lang A2 · trong giờ học</small></span></button>
+  <button class="scn" data-s="fight"><span class="d" style="background:var(--red)"></span><span>Vận động mạnh, nghi xô xát<small>Cầu thang dãy A</small></span></button>
+  <button class="scn" data-s="yard"><span class="d" style="background:var(--sky)"></span><span>Vào vùng cấm giờ học<small>Sân sau · Nhà xe</small></span></button>
+  <label class="speed" for="esc"><input type="checkbox" id="esc" checked> Tự chuyển lên cô Hằng (phụ trách) nếu không ai nhận (3 phút, mô phỏng rút còn 20 giây)</label>
+  <div class="brand"><span>Số liệu và tên người trong app là mô phỏng.</span></div>
+ </aside>
+
+ <div class="phone" id="phone">
+  <div class="scr" id="scr">
+   <div class="notch"></div>
+   <button class="push" id="push" aria-live="assertive"><div class="hd"><span class="ic">AG</span>AI GUARDIAN<span style="margin-left:auto;font-weight:500">bây giờ</span></div><span class="lvl" id="pl"></span><div style="font-weight:700" id="pt"></div><div style="font-size:12.5px;color:#334155" id="pb"></div></button>
+   <div class="sbar"><span id="clk">09:40</span><span>5G ▮▮▮</span></div>
+   <header class="top" id="top"><h2 id="th">AI GUARDIAN</h2><p id="tp">Dãy A · 5 điểm giám sát · Trực: Thầy Thanh</p></header>
+   <main class="body" id="body"></main>
+   <nav class="nav" aria-label="Điều hướng app">
+    <button data-tab="home" aria-current="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/></svg>Tổng quan<span class="badge" id="bdg" hidden>1</span></button>
+    <button data-tab="map"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.3 7 13 7 13s7-7.7 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Bản đồ</button>
+    <button data-tab="log"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M5 3h11l4 4v14H5zM8 9h8v2H8zm0 4h8v2H8zm0 4h5v2H8z"/></svg>Nhật ký</button>
+    <button data-tab="set"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm8.4 5-.1-3 2-1.6-2-3.4-2.4.9a8 8 0 0 0-2.6-1.5L14.9 2h-4l-.4 2.5A8 8 0 0 0 8 6L5.5 5 3.6 8.5l2 1.6a8 8 0 0 0 0 3l-2 1.6 2 3.4 2.4-.9a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4.9 2-3.4z"/></svg>Cài đặt</button>
+   </nav>
+   <div class="toast" id="toast"></div>
+  </div>
+ </div>
+</div>
+<button class="fab" id="fab" aria-controls="desk">⚡ Giả lập sự cố</button>
+<div class="sheet-bg" id="sheetbg"></div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const C={red:"#DC2626",orange:"#F97316",amber:"#D97706",green:"#16A34A",teal:"#0F766E"};
+const LV={red:"CẢNH BÁO ĐỎ",orange:"CẢNH BÁO CAM",amber:"CẢNH BÁO VÀNG"};
+const ZONES=[
+ {id:"wcnam",name:"A2 · WC Nam",dev:"Máy đo bụi mịn · GĐ1",x:477,y:48},
+ {id:"wcnu",name:"A2 · WC Nữ",dev:"Máy đo bụi mịn · GĐ1",x:583,y:48},
+ {id:"hl",name:"A2 · Hành lang",dev:"Camera AI · GĐ2",x:300,y:109},
+ {id:"stair",name:"A · Cầu thang",dev:"Camera AI · GĐ2",x:52,y:170},
+ {id:"yard",name:"Sân sau · Nhà xe",dev:"Camera AI · GĐ2",x:560,y:275}];
+const SC={
+ vape:{zone:"wcnam",lv:"orange",title:"A2 · WC Nam — Nghi hơi thuốc lá điện tử",body:"PM2.5 tăng đột ngột, kéo dài, độ ẩm bình thường — đạt cả 4 lớp lọc.",code:"A2-WCNAM-KK",todo:"Đến WC, nhắc nhở và giáo dục; ghi kết quả xác minh để nhóm đánh giá độ chính xác."},
+ cig:{zone:"wcnu",lv:"orange",title:"A2 · WC Nữ — Nghi khói thuốc lá",body:"PM2.5 tăng nhanh và duy trì, độ ẩm bình thường — đạt cả 4 lớp lọc.",code:"A2-WCNU-KK",todo:"Đến WC, nhắc nhở và giáo dục; ghi kết quả xác minh."},
+ off:{zone:"wcnu",lv:"amber",title:"A2 · WC Nữ — Máy đo mất kết nối",body:"Không nhận số liệu 5 phút. Có thể bị che hoặc rút điện.",code:"A2-WCNU-KK",todo:"Người phụ trách thiết bị kiểm tra ngay trong ngày."},
+ crowd:{zone:"hl",lv:"orange",gd2:1,title:"Hành lang A2 — Tụ tập bất thường",body:"Camera AI: 5 người đứng trước cửa WC hơn 4 phút trong giờ học.",code:"A2-HL-CAM",todo:"Giám thị ra kiểm tra, đưa học sinh về lớp. Chỉ người có thẩm quyền xem đoạn video cảnh báo."},
+ fight:{zone:"stair",lv:"red",gd2:1,title:"Cầu thang A — Nghi xô xát",body:"Camera AI: vận động mạnh của 2–3 người kéo dài 6 giây (phân tích khung xương).",code:"A-CT-CAM",todo:"2 người cùng đến. Tách các bạn ra, sơ cứu nếu cần, báo cô Hằng."},
+ yard:{zone:"yard",lv:"orange",gd2:1,title:"Sân sau — Vào vùng cấm giờ học",body:"Camera AI: 3 người vượt hàng rào ảo khu nhà xe (tiết 3).",code:"SAU-CAM",todo:"Giám thị khu B ra kiểm tra, đưa học sinh về lớp."}};
+let state={tab:"home",alert:null,logs:[],timers:[],clock:[9,40,0],notify:{red:true,orange:true,amber:true},duty:"Thầy Thanh"};
+const tNow=()=>state.clock.map(n=>String(n).padStart(2,"0")).join(":");
+function tick(s){const c=state.clock;c[2]+=s;while(c[2]>=60){c[2]-=60;c[1]++;}while(c[1]>=60){c[1]-=60;c[0]++;}$("clk").textContent=tNow().slice(0,5);}
+setInterval(()=>tick(1),1000);
+const later=(ms,f)=>state.timers.push(setTimeout(f,ms));
+function clear(){state.timers.forEach(clearTimeout);state.timers=[];}
+function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1800);}
+function log(lv,t){state.logs.unshift({t:tNow(),lv,msg:t});}
+function header(bg,h,p){$("top").style.background=bg;$("th").textContent=h;$("tp").textContent=p;}
+
+function zoneStatus(z){
+ const a=state.alert;
+ if(a&&a.zone===z.id&&a.stage!=="done"){return {c:C[a.lv],t:a.lv==="amber"?"Sự cố":"Báo động",bg:a.lv==="red"?"#FEE2E2":a.lv==="orange"?"#FFEDD5":"#FEF3C7"};}
+ return {c:C.green,t:"Bình thường",bg:"#DCFCE7"};
+}
+function home(){
+ const a=state.alert&&state.alert.stage!=="done"?state.alert:null;
+ header(C.teal,"AI GUARDIAN","Dãy A · 5 điểm giám sát · Trực: "+state.duty);
+ let h="";
+ if(a){h+=`<button class="card alertbar" id="goA" style="background:${C[a.lv]}"><span style="font-size:22px">!</span><span><b>${LV[a.lv]}</b>${a.title}</span><span style="margin-left:auto">›</span></button>`;}
+ const bad=a?1:0;
+ h+=`<div class="card stats"><div><b style="color:${C.green}">${5-bad}</b><span>hoạt động</span></div><div><b style="color:${C.amber}">${a&&a.lv==="amber"?1:0}</b><span>sự cố</span></div><div><b style="color:${C.red}">${a&&a.lv!=="amber"?1:0}</b><span>báo động</span></div></div>`;
+ h+=`<div class="lbl">KHU VỰC</div>`;
+ ZONES.forEach(z=>{const s=zoneStatus(z);h+=`<button class="card z" data-z="${z.id}"><span class="d" style="background:${s.c}"></span><span><b>${z.name}</b><small>${z.dev}</small></span><em style="background:${s.bg};color:${s.c}">${s.t}</em></button>`;});
+ h+=`<div class="lbl">NGƯỜI TRỰC HÔM NAY</div><div class="card" style="font-size:13.5px">Khu A: <b>${state.duty}</b> · Khu B: <b>Thầy Kha</b><br>Phụ trách chung: <b>Cô Hằng</b></div>`;
+ $("body").innerHTML=h;
+ const g=$("goA");if(g)g.onclick=()=>detail();
+ document.querySelectorAll("[data-z]").forEach(b=>b.onclick=()=>{const a=state.alert;if(a&&a.zone===b.dataset.z&&a.stage!=="done")detail();else{show("map");}});
+}
+function mapSvg(active){
+ const a=state.alert&&state.alert.stage!=="done"?state.alert:null;
+ const fill=id=>a&&a.zone===id?(a.lv==="red"?"#FEE2E2":a.lv==="orange"?"#FFEDD5":"#FEF3C7"):null;
+ let s=`<svg viewBox="0 0 640 330" width="100%" font-family="Be Vietnam Pro,Arial" font-size="13" font-weight="700" text-anchor="middle">
+ <rect x="4" y="4" width="632" height="210" fill="#fff" stroke="#334155" stroke-width="4"/>`;
+ [["9A1",4],["9A2",109],["9A3",214],["9A4",319]].forEach(([n,x])=>s+=`<rect x="${x}" y="4" width="105" height="85" fill="#fff" stroke="#334155" stroke-width="2"/><text x="${x+52}" y="52" fill="#10283A">${n}</text>`);
+ s+=`<rect x="424" y="4" width="106" height="85" fill="${fill("wcnam")||"#EEF6FB"}" stroke="#334155" stroke-width="2"/><text x="477" y="24" fill="#10283A">WC NAM</text>
+ <rect x="530" y="4" width="106" height="85" fill="${fill("wcnu")||"#EEF6FB"}" stroke="#334155" stroke-width="2"/><text x="583" y="24" fill="#10283A">WC NỮ</text>
+ <rect x="4" y="89" width="632" height="40" fill="#F1F5F9"/><text x="220" y="114" fill="#94A3B8">HÀNH LANG</text>
+ <rect x="4" y="129" width="95" height="85" fill="${fill("stair")||"#F8FAFC"}" stroke="#334155" stroke-width="2"/><text x="52" y="200" fill="#10283A">CẦU THANG</text>
+ <rect x="99" y="129" width="130" height="85" fill="#F5F3FF" stroke="#334155" stroke-width="2"/><text x="164" y="150" fill="#7C3AED">GIÁM THỊ</text>
+ <rect x="229" y="129" width="200" height="85" fill="#fff" stroke="#334155" stroke-width="2"/><text x="329" y="176" fill="#10283A">9A5</text>
+ <rect x="429" y="129" width="207" height="85" fill="#F1F5F9" stroke="#334155" stroke-width="2"/><text x="532" y="176" fill="#10283A">KHO (khóa)</text>
+ <rect x="4" y="232" width="632" height="94" rx="8" fill="${fill("yard")||"#E3F2DF"}"/><text x="110" y="256" fill="#3F6B35">SÂN SAU – NHÀ XE</text>
+ <circle cx="164" cy="185" r="8" fill="#0F766E"/><text x="164" y="206" font-size="10" fill="#64748B">bạn ở đây</text>`;
+ ZONES.forEach(z=>{s+=`<circle cx="${z.x}" cy="${z.y+20}" r="7" fill="${zoneStatus(z).c}" stroke="#fff" stroke-width="2"/>`;});
+ if(a){const z=ZONES.find(z=>z.id===a.zone);s+=`<circle cx="${z.x}" cy="${z.y+20}" r="10" fill="${C[a.lv]}" class="pulse"/>`;
+  if(active){s+=`<path d="M164 177 L164 109 L${z.x} 109 L${z.x} ${z.y+28}" stroke="#0F766E" stroke-width="3" stroke-dasharray="7 6" fill="none"/>`;}}
+ return s+`</svg>`;
+}
+function map(){
+ header(C.teal,"Bản đồ","Dãy A · Tầng 2 · chạm chấm màu để xem");
+ let h=`<div class="card" style="padding:8px">${mapSvg(true)}</div>`;
+ h+=`<div class="card" style="font-size:13px"><b>Chú thích:</b> <span style="color:${C.green}">●</span> bình thường · <span style="color:${C.orange}">●</span> cảnh báo cam · <span style="color:${C.red}">●</span> cảnh báo đỏ · <span style="color:${C.amber}">●</span> sự cố thiết bị</div>`;
+ h+=`<div class="lbl">THIẾT BỊ TRONG KHU</div>`;
+ [["A2-WCNAM-KK","GĐ1 · Máy đo bụi mịn WiFi (PM2.5, độ ẩm, nhiệt độ)"],["A2-WCNU-KK","GĐ1 · Máy đo bụi mịn WiFi (PM2.5, độ ẩm, nhiệt độ)"],["A2-HL-CAM","GĐ2 · Camera AI hành lang — nhìn từ ngoài, che vùng cửa WC"],["A-CT-CAM","GĐ2 · Camera AI cầu thang"],["SAU-CAM","GĐ2 · Camera AI sân sau, hàng rào ảo"]].forEach(([c,d])=>h+=`<div class="card" style="padding:10px 14px"><b style="font-family:'Courier New',monospace">${c}</b><div style="font-size:12.5px;color:#64748B">${d}</div></div>`);
+ $("body").innerHTML=h;
+}
+function logs(){
+ header(C.teal,"Nhật ký","Hôm nay và thống kê tuần");
+ let h=`<div class="lbl">HÔM NAY</div><div class="card log">`;
+ h+=state.logs.length?state.logs.map(l=>`<div class="it"><span class="d" style="background:${C[l.lv]||"#94A3B8"}"></span><div><time style="color:#64748B">${l.t}</time><div>${l.msg}</div></div></div>`).join(""):`<div class="empty">Chưa có sự việc nào. Chọn một sự cố ở bảng điều khiển để thử.</div>`;
+ h+=`</div><div class="lbl">TUẦN NÀY (SỐ LIỆU MÔ PHỎNG)</div><div class="card">`;
+ [["WC Nam A2",7,C.orange],["WC Nữ A2",2,C.orange],["Đã tự lọc",5,C.green],["Hành lang*",3,"#0284C7"],["Sân sau*",1,"#0284C7"]].forEach(([n,v,c])=>h+=`<div style="display:flex;align-items:center;gap:10px;margin:7px 0;font-size:12.5px"><span style="width:84px">${n}</span><span class="bar" style="width:${v*24}px;background:${c}"></span><b>${v}</b></div>`);
+ h+=`</div><div class="card stats"><div><b style="color:${C.teal}">1:52</b><span>phút có mặt TB</span></div><div><b style="color:${C.teal}">100%</b><span>được nhận</span></div><div><b style="color:${C.amber}">3</b><span>báo nhầm</span></div></div>`;
+ h+=`<div class="card" style="font-size:13px"><b>Giờ “nóng” nhất:</b> ra chơi 9:30–9:45 tại WC Nam A2. Đề xuất tăng tuần tra khung giờ này.<br><span style="color:#64748B">* Camera AI là giai đoạn 2 (mở rộng).</span></div>`;
+ $("body").innerHTML=h;
+}
+function settings(){
+ header(C.teal,"Cài đặt","Tài khoản: "+state.duty+" · Giám thị khu A");
+ const sw=(k,t,d)=>`<div class="row"><div><b>${t}</b><div style="font-size:12px;color:#64748B">${d}</div></div><button class="sw" role="switch" aria-checked="${state.notify[k]}" data-k="${k}" aria-label="${t}"></button></div>`;
+ let h=`<div class="lbl">NHẬN CẢNH BÁO</div><div class="card">${sw("red","Mức Đỏ","Nghi xô xát (camera AI · GĐ2) · luôn nên bật")}${sw("orange","Mức Cam","Hút thuốc (GĐ1), tụ tập, vùng cấm (GĐ2)")}${sw("amber","Mức Vàng","Thiết bị hỏng, mất kết nối")}</div>`;
+ h+=`<div class="lbl">NGƯỜI TRỰC</div><div class="card"><label for="duty" style="font-size:12.5px;color:#64748B">Tên hiển thị</label><select id="duty" style="width:100%;margin-top:6px;padding:9px;border-radius:10px;border:1px solid #CBD5E1;font:inherit;background:#fff;color:#10283A">${["Thầy Thanh","Thầy Kha","Cô Hằng"].map(n=>`<option ${n===state.duty?"selected":""}>${n}</option>`).join("")}</select></div>`;
+ h+=`<div class="lbl">QUYỀN RIÊNG TƯ</div><div class="card" style="font-size:13px;line-height:1.6">Trong nhà vệ sinh chỉ có máy đo không khí: không ghi hình, không ghi âm. Camera AI (giai đoạn 2) chỉ đặt ngoài hành lang, cầu thang, sân; che vùng cửa WC; không nhận diện khuôn mặt; chỉ lưu đoạn video lúc có cảnh báo.</div>`;
+ $("body").innerHTML=h;
+ document.querySelectorAll(".sw").forEach(b=>b.onclick=()=>{const k=b.dataset.k;state.notify[k]=!state.notify[k];b.setAttribute("aria-checked",state.notify[k]);toast(state.notify[k]?"Đã bật nhận cảnh báo":"Đã tắt nhận cảnh báo");});
+ $("duty").onchange=e=>{state.duty=e.target.value;settings();toast("Đã đổi người trực");};
+}
+function detail(){
+ const a=state.alert;if(!a)return;
+ state.tab="detail";setNav(null);
+ header(C[a.lv],LV[a.lv],(ZONES.find(z=>z.id===a.zone).name)+" · "+a.t0);
+ let h=`<div class="card" style="padding:8px">${mapSvg(true)}<div style="font-size:12px;color:#64748B;text-align:center">Đường đi từ phòng giám thị · khoảng 45 m</div></div>`;
+ h+=`<div class="card"><div style="font-size:12px;color:#64748B">Thiết bị</div><b>${a.code}</b><div style="font-size:12px;color:#64748B;margin-top:6px">Việc cần làm</div><div style="color:${C[a.lv]};font-weight:600">${a.todo}</div></div>`;
+ h+=`<div class="card tl">${a.steps.map(s=>`<div><time>${s[0]}</time><span>${s[1]}</span></div>`).join("")}</div>`;
+ if(a.stage==="new") h+=`<div class="btns"><button class="btn" id="b1">TÔI ĐẾN NGAY</button><button class="btn ghost" id="b2">GỌI HỖ TRỢ</button></div>`;
+ else if(a.stage==="going") h+=`<div class="btns"><button class="btn" id="b1">ĐÃ CÓ MẶT</button><button class="btn ghost" id="b2" ${a.help?"disabled":""}>${a.help?"ĐÃ GỌI":"GỌI HỖ TRỢ"}</button></div>`;
+ else if(a.stage==="here"){h+=`<div class="card"><b>Kết quả xử lý</b><div class="opts">${["Phát hiện vi phạm, đã lập biên bản","Đã hỗ trợ học sinh, chuyển tư vấn","Không phát hiện gì","Báo nhầm (ghi lý do để chỉnh ngưỡng)"].map((o,i)=>`<button class="opt" data-o="${i}" aria-pressed="${a.result===i}">${o}</button>`).join("")}</div></div><div class="btns"><button class="btn" id="b1" ${a.result==null?"disabled":""}>HOÀN TẤT · GHI NHẬT KÝ</button></div>`;}
+ $("body").innerHTML=h;$("body").scrollTop=0;
+ const b1=$("b1"),b2=$("b2");
+ if(a.stage==="new"){b1.onclick=()=>{tick(12);a.stage="going";a.acc=tNow();a.steps.push([tNow(),`<b>${state.duty}</b> đã nhận, đang đến`]);log(a.lv,`${state.duty} nhận: ${a.title}`);clearEsc();detail();toast("Cả nhóm trực đã biết bạn đang đến");};}
+ if(b2&&!a.help){b2.onclick=()=>{a.help=true;a.steps.push([tNow(),"Đã gọi thêm bảo vệ và cô Hằng"]);log(a.lv,"Gọi hỗ trợ: bảo vệ + cô Hằng");detail();};}
+ if(a.stage==="going"){b1.onclick=()=>{tick(88);a.stage="here";a.steps.push([tNow(),"Có mặt tại hiện trường (sau khoảng 1 phút 40 giây)"]);log(a.lv,"Có mặt tại "+ZONES.find(z=>z.id===a.zone).name);detail();};}
+ if(a.stage==="here"){document.querySelectorAll(".opt").forEach(o=>o.onclick=()=>{a.result=+o.dataset.o;detail();});
+  if(b1&&a.result!=null)b1.onclick=()=>{const r=["Lập biên bản vi phạm","Hỗ trợ học sinh, chuyển tư vấn","Không phát hiện gì","Báo nhầm, cần chỉnh ngưỡng"][a.result];log("green","Hoàn tất: "+r);a.stage="done";$("bdg").hidden=true;toast("Đã ghi nhật ký");show("log");};}
+}
+function clearEsc(){if(state.escT){clearTimeout(state.escT);state.escT=null;}}
+function setNav(tab){document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===tab));}
+function show(tab){state.tab=tab;setNav(tab);({home,map,log:logs,set:settings})[tab]();}
+document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>show(b.dataset.tab));
+
+function trigger(key){
+ if(key==="perfume"){clear();clearEsc();closeSheet();tick(15);log("green","A2 · WC Nam: PM2.5 tăng ngắn 8 giây rồi giảm — KHÔNG đạt lớp 3 (thời gian duy trì), AI GUARDIAN đã lọc, không làm phiền thầy cô");toast("Đã lọc báo giả · không gửi cảnh báo");show("log");return;}
+ const s=SC[key];clear();clearEsc();closeSheet();
+ if(!state.notify[s.lv]){toast("Bạn đã tắt nhận mức này trong Cài đặt");log(s.lv,s.title+" (không thông báo cho bạn)");if(state.tab==="log")logs();return;}
+ tick(20);
+ state.alert=Object.assign({},s,{stage:"new",t0:tNow(),help:false,result:null,steps:[[tNow(),s.gd2?"Camera AI phát hiện hành vi bất thường":"Máy đo ghi nhận PM2.5 tăng"]]});
+ const a=state.alert;
+ later(600,()=>{tick(1);a.steps.push([tNow(),s.gd2?"Máy tính của trường phân tích khung xương, không nhận diện khuôn mặt":"Phần mềm AI GUARDIAN kiểm tra 4 lớp lọc: đạt"]);});
+ later(1300,()=>{tick(2);a.steps.push([tNow(),"Gửi tới người trực theo ca"]);
+  $("pl").textContent=LV[s.lv];$("pl").style.background=C[s.lv];$("pt").textContent=(s.gd2?"[GĐ2 · Camera AI] ":"")+s.title;$("pb").textContent=s.body;
+  $("push").classList.add("show");$("phone").classList.remove("ring");void $("phone").offsetWidth;$("phone").classList.add("ring");
+  $("bdg").hidden=false;log(s.lv,s.title);show(state.tab==="detail"?"home":state.tab);
+  if(navigator.vibrate){try{navigator.vibrate([200,100,200]);}catch(e){}}
+  if($("esc").checked&&s.lv!=="amber"){state.escT=setTimeout(()=>{if(a.stage==="new"){a.steps.push([tNow(),"<b style='color:#DC2626'>Quá 3 phút chưa ai nhận → đã chuyển Cô Hằng (phụ trách)</b>"]);log("red","Tự chuyển lên cô Hằng: "+s.title);toast("Đã tự chuyển lên cô Hằng");if(state.tab==="detail")detail();}},20000);}
+ });
+ later(5200,()=>$("push").classList.remove("show"));
+}
+$("push").onclick=()=>{$("push").classList.remove("show");detail();};
+document.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>trigger(b.dataset.s));
+function closeSheet(){$("desk").classList.remove("open");$("sheetbg").classList.remove("open");}
+$("fab").onclick=()=>{$("desk").classList.add("open");$("sheetbg").classList.add("open");};
+$("sheetbg").onclick=closeSheet;
+show("home");
+})();
+</script>
